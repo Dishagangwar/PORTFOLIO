@@ -160,9 +160,10 @@ export function Skills() {
                           <div
                             key={item}
                             className="absolute -translate-x-1/2 -translate-y-1/2"
+                            // Fixed precision so server and client print identical strings (no hydration mismatch)
                             style={{
-                              left: `${50 + 50 * Math.cos(angle)}%`,
-                              top: `${50 + 50 * Math.sin(angle)}%`,
+                              left: `${(50 + 50 * Math.cos(angle)).toFixed(3)}%`,
+                              top: `${(50 + 50 * Math.sin(angle)).toFixed(3)}%`,
                             }}
                           >
                             <div
