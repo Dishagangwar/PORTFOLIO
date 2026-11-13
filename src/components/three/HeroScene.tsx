@@ -5,12 +5,15 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { PerformanceMonitor } from "@react-three/drei";
 import * as THREE from "three";
 import { attachPointer, pointer } from "@/lib/pointer";
-import { heroOrbit } from "@/content/site";
+import { heroOrbit, site } from "@/content/site";
 import {
   blobFragment,
   blobVertex,
+  haloFragment,
   particlesFragment,
   particlesVertex,
+  portraitFragment,
+  portraitVertex,
 } from "./shaders";
 
 type SceneProps = {
@@ -18,6 +21,7 @@ type SceneProps = {
   detail: number;
   particleCount: number;
   labels: React.RefObject<(HTMLDivElement | null)[]>;
+  particlesOnly: boolean;
 };
 
 /** Small seeded PRNG so the particle field is deterministic (and render stays pure). */
@@ -42,9 +46,11 @@ function useLayout() {
   const wide = size.width / size.height > 1.05 && size.width >= 900;
   return {
     wide,
-    x: wide ? viewport.width * 0.22 : 0,
-    y: wide ? 0 : viewport.height * 0.29,
-    scale: wide ? Math.min(0.82, viewport.width / 11) : Math.min(0.5, viewport.width / 5),
+    x: wide ? viewport.width * (site.heroPortrait ? 0.25 : 0.22) : 0,
+    y: wide ? 0 : viewport.height * (site.heroPortrait ? 0.28 : 0.29),
+    scale: wide
+      ? Math.min(0.82, viewport.width / 11)
+      : Math.min(site.heroPortrait ? 0.44 : 0.5, viewport.width / 5),
   };
 }
 
@@ -108,6 +114,124 @@ function Blob({ reduced, detail }: { reduced: boolean; detail: number }) {
       <lineSegments ref={shell} geometry={shellGeo}>
         <lineBasicMaterial color="#8b7bff" transparent opacity={0.12} />
       </lineSegments>
+    </group>
+  );
+}
+
+/** Wireframe icosahedron that slowly turns behind the hero object. */
+function Shell({ reduced, radius = 1.95, opacity = 0.12 }: { reduced: boolean; radius?: number; opacity?: number }) {
+  const ref = useRef<THREE.LineSegments>(null);
+  const geo = useMemo(() => new THREE.EdgesGeometry(new THREE.IcosahedronGeometry(radius, 1)), [radius]);
+  useFrame((state, delta) => {
+    if (!ref.current || reduced) return;
+    ref.current.rotation.y -= Math.min(delta, 1 / 30) * 0.06;
+    ref.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.2) * 0.2;
+  });
+  return (
+    <lineSegments ref={ref} geometry={geo}>
+      <lineBasicMaterial color="#8b7bff" transparent opacity={opacity} />
+    </lineSegments>
+  );
+}
+
+/**
+ * Cut-out portrait on a plane, with a glow halo behind it and a rim light that
+ * follows the pointer. Orbit rings and labels keep circling around it.
+ */
+function Portrait({ src, reduced }: { src: string; reduced: boolean }) {
+  const [texture, setTexture] = useState<THREE.Texture | null>(null);
+  const material = useRef<THREE.ShaderMaterial>(null);
+  const halo = useRef<THREE.ShaderMaterial>(null);
+  const group = useRef<THREE.Group>(null);
+
+  useEffect(() => {
+    let disposed = false;
+    new THREE.TextureLoader().load(src, (t) => {
+      t.colorSpace = THREE.SRGBColorSpace;
+      t.anisotropy = 4;
+      if (disposed) t.dispose();
+      else setTexture(t);
+    });
+    return () => {
+      disposed = true;
+    };
+  }, [src]);
+  useEffect(() => () => texture?.dispose(), [texture]);
+
+  const uniforms = useMemo(
+    () => ({
+      uMap: { value: null as THREE.Texture | null },
+      uLight: { value: new THREE.Vector2(0.6, 0.6) },
+      uRimA: { value: VIOLET.clone() },
+      uRimB: { value: CYAN.clone() },
+      uReveal: { value: reduced ? 1 : 0 },
+    }),
+    [reduced],
+  );
+  const haloUniforms = useMemo(
+    () => ({
+      uColorA: { value: VIOLET.clone() },
+      uColorB: { value: CYAN.clone() },
+      uOffset: { value: new THREE.Vector2() },
+    }),
+    [],
+  );
+
+  const aspect = texture ? (texture.image as HTMLImageElement).width / (texture.image as HTMLImageElement).height : 0.76;
+  const height = 4.5;
+
+  useFrame((state, delta) => {
+    const m = material.current;
+    if (m && texture) {
+      const u = m.uniforms as typeof uniforms;
+      u.uMap.value = texture;
+      if (u.uReveal.value < 1) u.uReveal.value = Math.min(1, u.uReveal.value + Math.min(delta, 1 / 30) * 0.7);
+      // Rim light comes from the pointer's side
+      u.uLight.value.x += (pointer.x - u.uLight.value.x) * 0.08;
+      u.uLight.value.y += (pointer.y * 0.8 + 0.2 - u.uLight.value.y) * 0.08;
+    }
+    if (halo.current) {
+      const o = (halo.current.uniforms as typeof haloUniforms).uOffset.value;
+      o.x += (pointer.x - o.x) * 0.05;
+      o.y += (pointer.y - o.y) * 0.05;
+    }
+    // Gentle float
+    if (group.current && !reduced) {
+      group.current.position.y = Math.sin(state.clock.elapsedTime * 0.8) * 0.05;
+    }
+  });
+
+  return (
+    <group>
+      <mesh position={[0, 0.1, -0.6]}>
+        <planeGeometry args={[5.2, 5.2]} />
+        <shaderMaterial
+          ref={halo}
+          vertexShader={portraitVertex}
+          fragmentShader={haloFragment}
+          uniforms={haloUniforms}
+          transparent
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+      <group position={[0, 0.2, -1.6]}>
+        <Shell reduced={reduced} radius={1.9} opacity={0.09} />
+      </group>
+      <group ref={group}>
+        {texture && (
+          <mesh position={[0, -0.05, 0.3]}>
+            <planeGeometry args={[height * aspect, height]} />
+            <shaderMaterial
+              ref={material}
+              vertexShader={portraitVertex}
+              fragmentShader={portraitFragment}
+              uniforms={uniforms}
+              transparent
+            />
+          </mesh>
+        )}
+      </group>
     </group>
   );
 }
@@ -277,21 +401,27 @@ function Rig({ children, reduced }: { children: React.ReactNode; reduced: boolea
   return <group ref={ref}>{children}</group>;
 }
 
-function Scene({ reduced, detail, particleCount, labels }: SceneProps) {
+function Scene({ reduced, detail, particleCount, labels, particlesOnly }: SceneProps) {
   return (
     <>
       <Particles count={particleCount} reduced={reduced} />
+      {!particlesOnly && (
       <Rig reduced={reduced}>
-        <Blob reduced={reduced} detail={detail} />
+        {site.heroPortrait ? (
+          <Portrait src={site.heroPortrait} reduced={reduced} />
+        ) : (
+          <Blob reduced={reduced} detail={detail} />
+        )}
         <OrbitRing radius={2.0} tilt={[1.25, 0.2]} speed={0.4} opacity={0.18} />
         <OrbitRing radius={2.75} tilt={[1.1, -0.35]} speed={-0.25} opacity={0.1} />
         <TechOrbit reduced={reduced} labels={labels} />
       </Rig>
+      )}
     </>
   );
 }
 
-export default function HeroScene({ active }: { active: boolean }) {
+export default function HeroScene({ active, particlesOnly = false }: { active: boolean; particlesOnly?: boolean }) {
   const [dpr, setDpr] = useState<[number, number]>([1, 1.75]);
   const labels = useRef<(HTMLDivElement | null)[]>([]);
   const [cfg, setCfg] = useState<{ reduced: boolean; detail: number; particles: number } | null>(null);
@@ -326,8 +456,9 @@ export default function HeroScene({ active }: { active: boolean }) {
         onIncline={() => setDpr([1, 1.75])}
         flipflops={3}
       />
-      <Scene reduced={cfg.reduced} detail={cfg.detail} particleCount={cfg.particles} labels={labels} />
+      <Scene reduced={cfg.reduced} detail={cfg.detail} particleCount={cfg.particles} labels={labels} particlesOnly={particlesOnly} />
     </Canvas>
+      {!particlesOnly && (
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
         {heroOrbit.map((name, i) => (
           <div
@@ -342,6 +473,7 @@ export default function HeroScene({ active }: { active: boolean }) {
           </div>
         ))}
       </div>
+      )}
     </div>
   );
 }

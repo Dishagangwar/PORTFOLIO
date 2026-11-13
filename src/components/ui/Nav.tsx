@@ -93,7 +93,8 @@ export function Nav() {
           <div
             className={cn(
               "hidden items-center rounded-full p-1.5 transition-[background-color,box-shadow,backdrop-filter] duration-700 md:flex",
-              scrolled
+              // A hero photo can put bright areas behind the links, so keep the glass on from the start
+              scrolled || site.heroBackground
                 ? "bg-ink-2/60 shadow-[inset_0_0_0_1px_rgb(255_255_255/0.08),0_20px_50px_-20px_rgb(0_0_0/0.8)] backdrop-blur-xl"
                 : "bg-transparent",
             )}

@@ -12,6 +12,7 @@ import { about } from "@/content/site";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { FadeIn } from "@/components/ui/Reveal";
 import { Workspace } from "@/components/visuals/Workspace";
+import { PhotoBackdrop } from "@/components/visuals/PhotoBackdrop";
 
 /** Words light up one by one as the paragraph scrolls through the viewport. */
 function ScrollHighlight({ text }: { text: string }) {
@@ -63,9 +64,13 @@ export function About() {
   const reduce = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: section, offset: ["start end", "end start"] });
   const bgX = useTransform(scrollYProgress, [0, 1], ["5%", reduce ? "5%" : "-25%"]);
+  const photoY = useTransform(scrollYProgress, [0, 1], reduce ? ["0%", "0%"] : ["-6%", "6%"]);
 
   return (
     <section id="about" ref={section} className="relative overflow-hidden py-32 md:py-44">
+      {/* Subtle photo backdrop (shared with the hero so both look identical) */}
+      {about.photo && <PhotoBackdrop src={about.photo} y={photoY} />}
+
       {/* Parallax backdrop word */}
       <motion.span
         aria-hidden

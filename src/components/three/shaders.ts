@@ -160,3 +160,64 @@ void main(){
   #include <colorspace_fragment>
 }
 `;
+
+/* Hero portrait: photo cut-out with a cool colour grade and a rim light that follows the pointer. */
+export const portraitVertex = /* glsl */ `
+varying vec2 vUv;
+void main(){
+  vUv = uv;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}
+`;
+
+export const portraitFragment = /* glsl */ `
+uniform sampler2D uMap;
+uniform vec2 uLight;     // light direction in UV space (from the pointer)
+uniform vec3 uRimA;
+uniform vec3 uRimB;
+uniform float uReveal;   // 0 → 1 intro reveal
+varying vec2 vUv;
+void main(){
+  vec4 c = texture2D(uMap, vUv);
+  // Reveal sweeps up from the bottom
+  float reveal = smoothstep(vUv.y - 0.08, vUv.y, uReveal * 1.1);
+  float a = c.a * reveal;
+  if (a < 0.02) discard;
+
+  // Directional rim: pixel is lit if the neighbour toward the light is transparent
+  vec2 dir = normalize(uLight + vec2(0.0001));
+  float r = 0.012;
+  float toward = texture2D(uMap, vUv + dir * r).a;
+  float around = (texture2D(uMap, vUv + vec2(r, 0.0)).a + texture2D(uMap, vUv - vec2(r, 0.0)).a
+                + texture2D(uMap, vUv + vec2(0.0, r)).a + texture2D(uMap, vUv - vec2(0.0, r)).a) * 0.25;
+  float rim = c.a * (1.0 - toward) * 0.9 + c.a * (1.0 - around) * 0.12;
+
+  // Gentle cool grade so the photo sits in the neon scene
+  vec3 col = c.rgb;
+  float luma = dot(col, vec3(0.299, 0.587, 0.114));
+  col = mix(col, vec3(luma) * vec3(0.92, 0.98, 1.08), 0.18);
+  col *= 0.95;
+  col += rim * mix(uRimA, uRimB, vUv.y) * 0.75;
+
+  gl_FragColor = vec4(col, a);
+  #include <tonemapping_fragment>
+  #include <colorspace_fragment>
+}
+`;
+
+/* Soft radial glow drawn behind the portrait. */
+export const haloFragment = /* glsl */ `
+uniform vec3 uColorA;
+uniform vec3 uColorB;
+uniform vec2 uOffset;
+varying vec2 vUv;
+void main(){
+  vec2 p = vUv - 0.5 - uOffset * 0.12;
+  float d = length(p);
+  float g = smoothstep(0.5, 0.0, d);
+  g = pow(g, 2.2);
+  vec3 col = mix(uColorA, uColorB, smoothstep(-0.3, 0.3, p.y + p.x * 0.5));
+  gl_FragColor = vec4(col * g, g * 0.85);
+  #include <colorspace_fragment>
+}
+`;
