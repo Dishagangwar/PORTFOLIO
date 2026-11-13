@@ -27,14 +27,15 @@ Requires Node 20.9 or newer. The project was built and tested on Node 24.
 | SEO title, description, domain | `site.seo` |
 | About copy and principles | `about` |
 | Skill categories | `skillCategories`, `alsoExploring` |
-| Projects (Netguard AI, CareLink, Affirm) | `projects` |
+| Projects: Flutter & Dart and Kotlin & XML showcases | `projectCategories` |
 | Experience timeline (internship, Flutter work, DevUp VP) | `experience` |
 | Technologies orbiting the hero object | `heroOrbit` |
 
 Other things to update:
 
 - **Resume:** put your PDF at `public/resume.pdf`. To use a different file, change `site.resumeUrl`.
-- **Project screenshots:** each project shows a generated, animated preview by default. To use a real screenshot, add the image to `public/projects/` and set `image: "/projects/netguard.jpg"` on that project.
+- **Project screenshots:** each project shows device frames with a placeholder screen. Add portrait app screenshots to `public/projects/` and set `screenshots: ["/projects/medsagar-1.png", "/projects/medsagar-2.png"]` on that project (up to 3 are shown inside the frames).
+- **Project tech stacks:** only the technologies implied by each category are pre-filled (Flutter/Dart; Kotlin/XML/Android SDK). Replace the `[Add tech]` entry with what each app actually uses. Set `demo: ""` to hide the Live Demo button for apps without one.
 - **Project links:** while a GitHub or demo URL is still a placeholder, its button shows as a dashed "[add link]" chip and isn't clickable. It becomes a real link once you enter the URL.
 - **Favicon:** replace `src/app/favicon.ico`.
 

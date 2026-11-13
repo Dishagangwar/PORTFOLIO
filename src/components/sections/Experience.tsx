@@ -67,8 +67,8 @@ export function Experience() {
                 transition={{ duration: 1, ease: EASE }}
                 className="md:pr-12 md:text-right"
               >
-                <p className="font-mono text-sm text-fg/80">{item.period}</p>
-                <p className="eyebrow mt-2 !text-[10px]">{item.type}</p>
+                {item.period && <p className="font-mono text-sm text-fg/80">{item.period}</p>}
+                <p className={item.period ? "eyebrow mt-2 !text-[10px]" : "eyebrow !text-[10px]"}>{item.type}</p>
               </motion.div>
 
               {/* Node */}
@@ -95,7 +95,7 @@ export function Experience() {
                   {item.role}
                 </h3>
                 <p className="mt-1 font-serif text-2xl text-accent-gradient italic">{item.org}</p>
-                <p className="mt-5 max-w-2xl leading-relaxed text-muted">{item.summary}</p>
+                {item.summary && <p className="mt-5 max-w-2xl leading-relaxed text-muted">{item.summary}</p>}
                 <ul className="mt-6 max-w-2xl space-y-3">
                   {item.points.map((pt, j) => (
                     <li key={j} className="flex gap-3 text-fg/80">
