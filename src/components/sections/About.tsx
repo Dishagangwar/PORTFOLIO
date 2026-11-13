@@ -10,7 +10,7 @@ import {
 } from "motion/react";
 import { about } from "@/content/site";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { FadeIn } from "@/components/ui/Reveal";
+import { FadeIn, SplitReveal } from "@/components/ui/Reveal";
 import { Workspace } from "@/components/visuals/Workspace";
 import { PhotoBackdrop } from "@/components/visuals/PhotoBackdrop";
 
@@ -111,7 +111,7 @@ export function About() {
             >
               <span className="font-mono text-xs text-dim">0{i + 1}</span>
               <h3 className="mt-10 text-2xl font-medium tracking-[-0.03em]">
-                {p.title}
+                <SplitReveal text={p.title} delay={0.1 + i * 0.1} />
               </h3>
               <p className="mt-3 max-w-xs leading-relaxed text-muted">{p.body}</p>
               <span

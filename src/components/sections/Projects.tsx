@@ -132,7 +132,7 @@ function ProjectInfo({
             size === "lg" ? "text-[clamp(2.5rem,4.2vw,4.5rem)]" : "text-[clamp(2.5rem,4.4vw,4rem)]",
           )}
         >
-          {project.name}
+          <SplitReveal text={project.name} stagger={0.06} />
         </h3>
         <p className="mt-4 font-serif text-2xl text-fg/80 italic lg:mt-3 lg:text-xl xl:text-2xl">{project.tagline}</p>
         <p className="mt-6 max-w-md leading-relaxed text-muted lg:mt-4">{project.description}</p>
@@ -217,7 +217,7 @@ function CategoryHeader({ category, count }: { category: ProjectCategory; count:
             text={last}
             delay={0.2}
             className="font-serif font-normal italic tracking-[-0.02em]"
-            wordClassName="pr-[0.05em] text-accent-gradient"
+            wordClassName="pr-[0.05em] text-accent-flow"
           />
         </h3>
         <div className="lg:col-span-4">

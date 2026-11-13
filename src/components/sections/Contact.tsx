@@ -193,12 +193,12 @@ export function Contact() {
 
         <h2 className="max-w-6xl text-[clamp(2.6rem,7.5vw,7.5rem)] leading-[0.92] font-medium tracking-[-0.05em]">
           <SplitReveal text="Have an idea?" />{" "}
-          <SplitReveal text="Let's build something" delay={0.1} wordClassName="text-gradient" />{" "}
+          <SplitReveal text="Let's build something" delay={0.1} wave={0.55} wordClassName="text-gradient-flow" />{" "}
           <SplitReveal
             text="meaningful."
             delay={0.25}
             className="font-serif font-normal italic tracking-[-0.02em]"
-            wordClassName="pr-[0.05em] text-accent-gradient"
+            wordClassName="pr-[0.05em] text-accent-flow"
           />
         </h2>
 

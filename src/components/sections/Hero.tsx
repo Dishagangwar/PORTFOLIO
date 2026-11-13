@@ -135,13 +135,14 @@ export function Hero() {
         </motion.div>
 
         <h1 className="max-w-[13ch] text-[clamp(2.7rem,8.6vw,8.6rem)] leading-[0.9] font-medium tracking-[-0.055em] lg:max-w-[11ch]">
-          <SplitReveal text="Building Digital Experiences That Feel" animate={ready} delay={0.15} stagger={0.06} wordClassName="text-gradient" />{" "}
+          <SplitReveal text="Building Digital Experiences That Feel" animate={ready} delay={0.15} stagger={0.06} wave={0.55} wordClassName="text-gradient-flow" />{" "}
           <SplitReveal
             text="Different."
             animate={ready}
             delay={0.5}
+            swash
             className="font-serif font-normal italic tracking-[-0.03em]"
-            wordClassName="pr-[0.06em] text-accent-gradient"
+            wordClassName="pr-[0.06em] text-accent-flow"
           />
         </h1>
 

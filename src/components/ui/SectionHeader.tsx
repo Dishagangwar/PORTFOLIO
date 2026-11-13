@@ -29,8 +29,9 @@ export function SectionHeader({
             <SplitReveal
               text={accent}
               delay={0.15}
+              swash
               className="font-serif font-normal italic tracking-[-0.02em]"
-              wordClassName="pr-[0.04em] text-accent-gradient"
+              wordClassName="pr-[0.04em] text-accent-flow"
             />
           </>
         )}

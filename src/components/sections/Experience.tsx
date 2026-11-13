@@ -7,6 +7,7 @@ import { useGSAP } from "@gsap/react";
 import { motion, useReducedMotion } from "motion/react";
 import { experience } from "@/content/site";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { SplitReveal } from "@/components/ui/Reveal";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -92,7 +93,7 @@ export function Experience() {
                 className="group md:pl-14"
               >
                 <h3 className="text-[clamp(1.75rem,3.2vw,2.75rem)] leading-tight font-medium tracking-[-0.04em]">
-                  {item.role}
+                  <SplitReveal text={item.role} delay={0.1} />
                 </h3>
                 <p className="mt-1 font-serif text-2xl text-accent-gradient italic">{item.org}</p>
                 {item.summary && <p className="mt-5 max-w-2xl leading-relaxed text-muted">{item.summary}</p>}
