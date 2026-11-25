@@ -1,6 +1,6 @@
 # Developer Portfolio
 
-An immersive, 3D developer portfolio for a Flutter developer and mobile engineer. It's built with Next.js 16, React 19, React Three Fiber, GSAP, Motion and Lenis.
+An immersive, 3D developer portfolio for a Flutter developer and mobile engineer. It's built with Next.js 16, React 19, React Three Fiber, Motion and Lenis.
 
 ## Quick start
 
@@ -29,7 +29,7 @@ Requires Node 20.9 or newer. The project was built and tested on Node 24.
 | Skill categories | `skillCategories`, `alsoExploring` |
 | Projects: Flutter & Dart and Kotlin & XML showcases | `projectCategories` |
 | Experience timeline (internship, Flutter work, DevUp VP) | `experience` |
-| Technologies orbiting the hero object | `heroOrbit` |
+| Flipping words in the hero, photo and title on the highway banner | `site.flipWords`, `site.portrait`, `site.bannerTitle` |
 
 Other things to update:
 
@@ -78,31 +78,34 @@ src/
     api/contact/route.ts  validated contact endpoint (Resend)
   content/site.ts         ← all editable content
   components/
-    providers/            IntroProvider (loader → hero sync), SmoothScroll (Lenis + GSAP ticker)
-    three/                HeroScene (R3F) + GLSL shaders
+    providers/            IntroProvider (loader → hero sync), SmoothScroll (Lenis)
+    drive/                the 3D world: DriveStage (fixed canvas), DriveScene (camera director),
+                          Car, Scenery (sky, road, city, gantries, tunnel), Displays (phones, banner, screen)
     sections/             Hero, About, Skills, Projects, Experience, Contact, Footer
-    ui/                   Nav, Cursor, Loader, Button, Magnetic, Reveal, TiltCard, SectionHeader, Icons
-    visuals/              Workspace (About) and generated project previews
-  lib/                    scroll helpers, pointer store, validation
+    ui/                   Nav, Cursor, Loader, DriveHud, Panel, FlipWord, Reveal, Button, Magnetic, SectionHeader, Icons
+    visuals/              generated project previews (small screens, reduced motion, modal)
+  lib/
+    drive.ts              scroll → road mapping, camera shots and colours per stop
+    ...                   scroll helpers, pointer store, validation
+public/models/            car.glb (CC BY 4.0, see CREDITS.md)
 ```
 
-### Motion system
+### The drive
 
-- **Lenis** handles smooth scrolling. It runs on GSAP's ticker so ScrollTrigger stays in sync.
-- **GSAP ScrollTrigger** drives the pinned horizontal Projects scroll (with an inner parallax per card) and the scrubbed Experience timeline line.
-- **Motion** handles the split-text reveals, magnetic buttons, 3D tilt, the nav pill, the mobile menu, modals and scroll-linked parallax.
-- **React Three Fiber** renders the hero:
-  - a custom-shader displaced blob with a fresnel and iridescent look, lit by a light that follows the mouse
-  - a wireframe shell and orbit rings
-  - an interactive particle field that pushes away from the cursor
-  - DOM labels for the tech stack, projected from 3D orbit positions
+The whole page sits over one fixed 3D world. Scrolling drives a car along a road, and every element with a `data-drive="<key>"` attribute is a stop on it.
+
+- `src/lib/drive.ts` lists the stops. Each one has a distance along the road, a camera shot (position, target, field of view and where the car sits on screen), a separate shot for small screens, and sky colours. Edit a stop to reframe a section.
+- The car follows the scroll position, and the camera follows with more weight. Wheels roll with the distance driven, the front wheels steer into bends, the body squats, dives and leans, and the brake lights come on as it slows.
+- Skills are overhead road signs, each project is a set of phones showing its first three screenshots, Experience runs through a tunnel, and the contact form is projected onto a drive-in screen. Adding a project to `site.ts` extends the road automatically.
+- **Motion** handles the tilting windows, word reveals, flip words, nav pill and modal. Text reveals are transform only.
 
 ### Performance and accessibility
 
-- The 3D bundle loads with `next/dynamic` (`ssr: false`) once the browser is idle, so text paints first. A CSS glow stands in until it's ready.
-- The render loop pauses when the hero is offscreen. Geometry detail and particle count drop on small or low-core devices, and the drei `PerformanceMonitor` lowers the pixel ratio when frame rate falls.
+- The 3D bundle loads with `next/dynamic` (`ssr: false`). The loader waits for the car, for 6 seconds at most.
+- Everything repeated is instanced, project textures load as the car approaches, and the drei `PerformanceMonitor` lowers the pixel ratio when frame rate falls.
+- Without WebGL, or if the scene fails, the page works over a plain gradient.
 - Animations are transform- and opacity-based, and layouts reserve their space, so content doesn't shift.
-- `prefers-reduced-motion` turns off Lenis, the loader, the custom cursor, parallax, orbit spin and 3D motion. Reveals become simple fades.
+- `prefers-reduced-motion` parks the car: the scene is a still frame, project cards show their own previews, and Lenis, the cursor, tilts and reveals are off.
 - The page includes:
   - a skip link and visible focus rings
   - semantic landmarks and `aria-current` on the nav

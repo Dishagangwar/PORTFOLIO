@@ -17,16 +17,6 @@ export const site = {
   location: "Delhi, India",
   availability: "[Open to internships & full-time roles]",
   email: "dg1319.disha@gmail.com",
-  /**
-   * Full-screen hero background photo, shown under a black overlay with floating particles.
-   * Set to "" to use the 3D scene instead (portrait or abstract object, below).
-   */
-  heroBackground: "/hero/hero-portrait.webp",
-  /**
-   * Cut-out portrait for the 3D scene (only used when heroBackground is "").
-   * Set to "" as well to show the original abstract 3D object.
-   */
-  heroPortrait: "/hero/portrait.webp",
   /** Words that flip in the hero line "I build mobile apps with ___" */
   flipWords: ["Flutter", "Kotlin", "clean architecture", "on-device AI"],
   /** Photo and title on the banner over the highway. Set portrait to "" to remove the banner. */
@@ -58,21 +48,7 @@ export const navItems = [
 
 export type SectionId = (typeof navItems)[number]["id"];
 
-/** Technologies that orbit the 3D object in the hero. */
-export const heroOrbit = [
-  "Flutter",
-  "Dart",
-  "Kotlin",
-  "Firebase",
-  "BLoC",
-  "Go",
-  "Django",
-  "PostgreSQL",
-];
-
 export const about = {
-  /** Subtle darkened photo behind the About section. Set to "" to remove it. */
-  photo: "",
   lead: "I'm a mobile engineer who treats every screen as a product, and every line of code as part of a system that has to last.",
   paragraphs: [
     "I work primarily with Flutter and Dart, building cross-platform apps that feel native, fluid and intentional. Mobile is where software meets people at their most personal, and I find that endlessly motivating.",

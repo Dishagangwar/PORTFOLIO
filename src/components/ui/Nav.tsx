@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useScroll } from "motion/react";
 import { navItems, site, type SectionId } from "@/content/site";
 import { scrollToId, lockScroll } from "@/lib/scroll";
 import { useIntro } from "@/components/providers/IntroProvider";
@@ -12,6 +12,7 @@ const EASE = [0.16, 1, 0.3, 1] as const;
 
 export function Nav() {
   const { ready } = useIntro();
+  const { scrollYProgress } = useScroll();
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState<SectionId>("home");
   const [open, setOpen] = useState(false);
@@ -63,10 +64,15 @@ export function Nav() {
         transition={{ duration: 0.9, ease: EASE, delay: ready && !scrolled ? 0.6 : 0 }}
         className="fixed inset-x-0 top-0 z-50 pt-4"
       >
+        <motion.div
+          aria-hidden
+          style={{ scaleX: scrollYProgress }}
+          className="absolute inset-x-0 top-0 h-[2px] origin-left bg-gradient-to-r from-violet to-cyan"
+        />
         <nav
           aria-label="Primary"
           className={cn(
-            "mx-auto flex max-w-[1440px] items-center justify-between gap-4 rounded-full px-[var(--gutter)] transition-all duration-700 ease-[var(--ease-expo)]",
+            "mx-auto flex max-w-[1440px] items-center justify-between gap-4 rounded-full px-[var(--gutter)]",
           )}
         >
           <a
@@ -93,10 +99,8 @@ export function Nav() {
           <div
             className={cn(
               "hidden items-center rounded-full p-1.5 transition-[background-color,box-shadow,backdrop-filter] duration-700 md:flex",
-              // A hero photo can put bright areas behind the links, so keep the glass on from the start
-              scrolled || site.heroBackground
-                ? "bg-ink-2/60 shadow-[inset_0_0_0_1px_rgb(255_255_255/0.08),0_20px_50px_-20px_rgb(0_0_0/0.8)] backdrop-blur-xl"
-                : "bg-transparent",
+              // The moving road can put bright areas behind the links, so keep the glass on
+              "bg-ink-2/60 shadow-[inset_0_0_0_1px_rgb(255_255_255/0.08),0_20px_50px_-20px_rgb(0_0_0/0.8)] backdrop-blur-xl",
             )}
           >
             {navItems.map((item) => (
