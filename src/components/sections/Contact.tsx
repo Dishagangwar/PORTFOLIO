@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { site } from "@/content/site";
-import { SplitReveal, FadeIn } from "@/components/ui/Reveal";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import { SlideIn } from "@/components/ui/Reveal";
+import { Panel } from "@/components/ui/Panel";
 import { Button, ArrowIcon } from "@/components/ui/Button";
 import { GithubIcon } from "@/components/ui/Icons";
 import { validateContact, type ContactErrors, type ContactInput } from "@/lib/validation";
@@ -180,32 +182,20 @@ export function Contact() {
   };
 
   return (
-    <section id="contact" className="relative overflow-hidden py-32 md:py-44">
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-      <div aria-hidden className="pointer-events-none absolute -bottom-1/3 left-1/2 h-[80vmax] w-[80vmax] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgb(139_123_255/0.14),rgb(91_233_255/0.05)_40%,transparent_65%)]" />
-
+    <section id="contact" data-drive="contact" className="relative isolate flex min-h-[110svh] items-center py-32">
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 max-lg:bg-ink/60 lg:bg-[linear-gradient(90deg,rgb(5_5_12/0.8),rgb(5_5_12/0.5)_34%,transparent_52%)] lg:[mask-image:linear-gradient(transparent,black_20%)]" />
       <div className="container-x relative">
-        <FadeIn className="mb-8 flex items-center gap-4">
-          <span className="font-mono text-xs text-cyan">05</span>
-          <span className="h-px w-12 bg-gradient-to-r from-cyan/70 to-transparent" />
-          <span className="eyebrow">Contact</span>
-        </FadeIn>
-
-        <h2 className="max-w-6xl text-[clamp(2.6rem,7.5vw,7.5rem)] leading-[0.92] font-medium tracking-[-0.05em]">
-          <SplitReveal text="Have an idea?" />{" "}
-          <SplitReveal text="Let's build something" delay={0.1} wave={0.55} wordClassName="text-gradient-flow" />{" "}
-          <SplitReveal
-            text="meaningful."
-            delay={0.25}
-            className="font-serif font-normal italic tracking-[-0.02em]"
-            wordClassName="pr-[0.05em] text-accent-flow"
-          />
-        </h2>
-
-        <div className="mt-20 grid gap-16 lg:grid-cols-12 lg:gap-12">
+        <div className="grid items-start gap-12 lg:grid-cols-12">
           {/* Direct channels */}
           <div className="lg:col-span-5">
-            <FadeIn>
+            <SectionHeader
+              index="05"
+              label="Contact"
+              title="Have an idea? Let's build something"
+              accent="meaningful."
+              size="md"
+            />
+            <SlideIn>
               <p className="eyebrow mb-4">Email</p>
               <div className="flex flex-wrap items-center gap-3">
                 <a
@@ -223,9 +213,9 @@ export function Contact() {
                   {copied ? "Copied ✓" : "Copy"}
                 </button>
               </div>
-            </FadeIn>
+            </SlideIn>
 
-            <FadeIn delay={0.1} className="mt-14">
+            <SlideIn delay={0.1} className="mt-8">
               <p className="eyebrow mb-4">Elsewhere</p>
               <ul className="divide-y divide-white/[0.06] border-y border-white/[0.06]">
                 {socials.map((s) => (
@@ -234,7 +224,7 @@ export function Contact() {
                       href={s.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group flex items-center justify-between py-5 text-lg"
+                      className="group flex items-center justify-between py-3.5"
                     >
                       <span className="flex items-center gap-4 text-fg/80 transition-colors group-hover:text-fg">
                         <span className="text-muted transition-colors group-hover:text-cyan">{s.icon}</span>
@@ -250,9 +240,9 @@ export function Contact() {
                   </li>
                 ))}
               </ul>
-            </FadeIn>
+            </SlideIn>
 
-            <FadeIn delay={0.2} className="mt-12">
+            <SlideIn delay={0.2} className="mt-8">
               <Button
                 href={site.resumeUrl}
                 download
@@ -265,12 +255,12 @@ export function Contact() {
               >
                 Download Resume
               </Button>
-            </FadeIn>
+            </SlideIn>
           </div>
 
           {/* Form */}
-          <FadeIn delay={0.1} className="lg:col-span-7">
-            <div className="glass relative rounded-[2rem] p-6 md:p-10">
+          <Panel id="contact-screen" side="right" tilt={false} title={`New message to ${site.email}`} className="lg:col-span-7">
+            <div className="relative p-6 md:p-10">
               <AnimatePresence mode="wait">
                 {status.kind === "success" ? (
                   <motion.div
@@ -365,7 +355,7 @@ export function Contact() {
                 )}
               </AnimatePresence>
             </div>
-          </FadeIn>
+          </Panel>
         </div>
       </div>
     </section>

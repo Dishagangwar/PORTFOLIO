@@ -1,121 +1,73 @@
 "use client";
 
 import { useRef } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
-import { motion, useReducedMotion } from "motion/react";
+import { motion, useReducedMotion, useScroll, useSpring, useTransform } from "motion/react";
 import { experience } from "@/content/site";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { SplitReveal } from "@/components/ui/Reveal";
-
-gsap.registerPlugin(ScrollTrigger, useGSAP);
-
-const EASE = [0.16, 1, 0.3, 1] as const;
+import { SlideIn } from "@/components/ui/Reveal";
+import { Panel } from "@/components/ui/Panel";
 
 export function Experience() {
   const list = useRef<HTMLOListElement>(null);
-  const line = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
-
-  useGSAP(
-    () => {
-      if (reduce) {
-        gsap.set(line.current, { scaleY: 1 });
-        return;
-      }
-      gsap.fromTo(
-        line.current,
-        { scaleY: 0 },
-        {
-          scaleY: 1,
-          ease: "none",
-          scrollTrigger: {
-            trigger: list.current,
-            start: "top 70%",
-            end: "bottom 60%",
-            scrub: 0.6,
-          },
-        },
-      );
-    },
-    { scope: list, dependencies: [reduce] },
-  );
+  const { scrollYProgress } = useScroll({ target: list, offset: ["start 0.7", "end 0.6"] });
+  const p = useSpring(scrollYProgress, { stiffness: 120, damping: 28 });
+  const top = useTransform(p, (v) => `${v * 100}%`);
 
   return (
-    <section id="experience" className="relative py-32 md:py-44">
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+    <section id="experience" data-drive="experience" className="relative flex min-h-[110svh] items-center py-32">
       <div className="container-x">
-        <SectionHeader index="04" label="Experience & Leadership" title="Where I've" accent="grown." />
+        <Panel side="left" title="journey.log" className="w-full lg:w-[min(620px,48vw)]">
+          <div className="p-6 md:p-10">
+            <SectionHeader size="md" index="04" label="Experience & Leadership" title="Where I've" accent="grown." />
 
-        <ol ref={list} className="relative">
-          {/* Track + animated progress line */}
-          <div aria-hidden className="absolute top-2 bottom-2 left-[7px] w-px bg-white/[0.08] md:left-[calc(30%+7px)]" />
-          <div
-            ref={line}
-            aria-hidden
-            className="absolute top-2 bottom-2 left-[7px] w-px origin-top bg-gradient-to-b from-cyan via-violet to-blue md:left-[calc(30%+7px)]"
-            style={{ transform: "scaleY(0)" }}
-          />
+            <ol ref={list} className="relative space-y-12">
+              {/* A lane with a little car that drives down it */}
+              <div aria-hidden className="absolute top-2 bottom-2 left-[7px] w-px bg-white/12">
+                <motion.div style={{ scaleY: reduce ? 1 : p }} className="h-full origin-top bg-gradient-to-b from-cyan to-violet" />
+                <motion.svg viewBox="0 0 16 28" style={{ top }} className="absolute left-1/2 z-10 motion-reduce:hidden h-7 w-4 -translate-x-1/2 -translate-y-1/2">
+                    <rect x="2" y="1" width="12" height="26" rx="5" fill="#4a2df0" />
+                    <path d="M4 9 h8 l-1 5 h-6z" fill="#0b0b16" />
+                    <path d="M4 20h8" stroke="#0b0b16" strokeWidth="2" />
+                    <path d="M4 25.6h2.4M9.6 25.6H12" stroke="#dfeaff" strokeWidth="1.6" strokeLinecap="round" />
+                    <path d="M4 2.4h2.4M9.6 2.4H12" stroke="#ff2340" strokeWidth="1.6" strokeLinecap="round" />
+                </motion.svg>
+              </div>
 
-          {experience.map((item, i) => (
-            <li key={i} className="relative grid gap-4 pb-20 pl-10 last:pb-0 md:grid-cols-[30%_1fr] md:gap-0 md:pl-0">
-              {/* Meta column */}
-              <motion.div
-                initial={{ opacity: 0, x: reduce ? 0 : -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-15%" }}
-                transition={{ duration: 1, ease: EASE }}
-                className="md:pr-12 md:text-right"
-              >
-                {item.period && <p className="font-mono text-sm text-fg/80">{item.period}</p>}
-                <p className={item.period ? "eyebrow mt-2 !text-[10px]" : "eyebrow !text-[10px]"}>{item.type}</p>
-              </motion.div>
-
-              {/* Node */}
-              <motion.span
-                aria-hidden
-                initial={{ scale: 0 }}
-                whileInView={{ scale: 1 }}
-                viewport={{ once: true, margin: "-20%" }}
-                transition={{ duration: 0.6, ease: EASE, delay: 0.2 }}
-                className="absolute top-1 left-0 grid h-[15px] w-[15px] place-items-center rounded-full bg-ink shadow-[0_0_0_1px_rgb(91_233_255/0.6),0_0_20px_rgb(91_233_255/0.5)] md:left-[30%]"
-              >
-                <span className="h-1.5 w-1.5 rounded-full bg-cyan" />
-              </motion.span>
-
-              {/* Content */}
-              <motion.div
-                initial={{ opacity: 0, y: reduce ? 0 : 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-15%" }}
-                transition={{ duration: 1.1, ease: EASE, delay: 0.1 }}
-                className="group md:pl-14"
-              >
-                <h3 className="text-[clamp(1.75rem,3.2vw,2.75rem)] leading-tight font-medium tracking-[-0.04em]">
-                  <SplitReveal text={item.role} delay={0.1} />
-                </h3>
-                <p className="mt-1 font-serif text-2xl text-accent-gradient italic">{item.org}</p>
-                {item.summary && <p className="mt-5 max-w-2xl leading-relaxed text-muted">{item.summary}</p>}
-                <ul className="mt-6 max-w-2xl space-y-3">
-                  {item.points.map((pt, j) => (
-                    <li key={j} className="flex gap-3 text-fg/80">
-                      <span aria-hidden className="mt-2.5 h-px w-4 shrink-0 bg-cyan/60" />
-                      {pt}
-                    </li>
-                  ))}
-                </ul>
-                <ul className="mt-6 flex flex-wrap gap-2" aria-label="Skills used">
-                  {item.tags.map((t, j) => (
-                    <li key={j} className="rounded-full bg-white/[0.05] px-3 py-1 font-mono text-[11px] text-fg/70">
-                      {t}
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            </li>
-          ))}
-        </ol>
+              {experience.map((item, i) => (
+                <li key={i} className="relative pl-10">
+                  <span aria-hidden className="absolute top-1.5 left-0 grid h-[15px] w-[15px] place-items-center rounded-full bg-ink shadow-[0_0_0_1px_rgb(91_233_255/0.6)]">
+                    <span className="h-1.5 w-1.5 rounded-full bg-cyan" />
+                  </span>
+                  <SlideIn>
+                    <p className="font-mono text-xs text-muted">
+                      {item.period && <span className="text-fg/85">{item.period} · </span>}
+                      {item.type}
+                    </p>
+                    <h3 className="mt-2 text-2xl leading-tight font-medium tracking-[-0.03em]">{item.role}</h3>
+                    <p className="font-serif text-xl text-accent-gradient italic">{item.org}</p>
+                    {item.summary && <p className="mt-3 leading-relaxed text-fg/65">{item.summary}</p>}
+                    <ul className="mt-4 space-y-2.5">
+                      {item.points.map((pt, j) => (
+                        <li key={j} className="flex gap-3 text-[15px] leading-relaxed text-fg/75">
+                          <span aria-hidden className="mt-2.5 h-px w-4 shrink-0 bg-cyan/60" />
+                          {pt}
+                        </li>
+                      ))}
+                    </ul>
+                    <ul className="mt-4 flex flex-wrap gap-2" aria-label="Skills used">
+                      {item.tags.map((t, j) => (
+                        <li key={j} className="rounded-full bg-white/[0.06] px-3 py-1 font-mono text-[11px] text-fg/70">
+                          {t}
+                        </li>
+                      ))}
+                    </ul>
+                  </SlideIn>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </Panel>
       </div>
     </section>
   );

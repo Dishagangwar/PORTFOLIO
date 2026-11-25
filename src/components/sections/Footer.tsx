@@ -9,11 +9,10 @@ export function Footer() {
   const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end end"] });
-  const y = useTransform(scrollYProgress, [0, 1], [reduce ? 0 : 120, 0]);
-  const opacity = useTransform(scrollYProgress, [0, 1], [0.2, 1]);
+  const x = useTransform(scrollYProgress, [0, 1], [reduce ? "0%" : "-22%", "0%"]);
 
   return (
-    <footer ref={ref} className="relative overflow-hidden border-t border-white/[0.06] pt-20 pb-8">
+    <footer ref={ref} className="relative z-10 overflow-hidden border-t border-white/[0.08] bg-ink/85 pt-20 pb-8">
       <div className="container-x">
         <div className="grid gap-10 md:grid-cols-3">
           <div>
@@ -64,15 +63,26 @@ export function Footer() {
 
       <motion.p
         aria-hidden
-        style={{ y, opacity }}
-        className="mt-20 text-center text-[clamp(3rem,15vw,15rem)] leading-[0.85] font-medium tracking-[-0.06em] whitespace-nowrap text-gradient select-none"
+        style={{ x }}
+        className="mt-20 text-center text-[clamp(3rem,15vw,15rem)] pb-[0.12em] leading-[0.95] font-medium tracking-[-0.06em] whitespace-nowrap text-gradient select-none"
       >
         {site.name}
       </motion.p>
 
       <div className="container-x mt-10 flex flex-wrap items-center justify-between gap-4 text-xs text-dim">
         <p>Designed &amp; engineered by {site.name}.</p>
-        <p>Built with Next.js, React Three Fiber, GSAP &amp; Motion.</p>
+        <p>Built with Next.js, React Three Fiber &amp; Motion.</p>
+        <p>
+          Car based on{" "}
+          <a className="underline underline-offset-2 hover:text-fg" href="https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/CarConcept" target="_blank" rel="noopener noreferrer">
+            Car Concept
+          </a>{" "}
+          by Eric Chadwick, © DGG,{" "}
+          <a className="underline underline-offset-2 hover:text-fg" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">
+            CC BY 4.0
+          </a>
+          , modified.
+        </p>
       </div>
     </footer>
   );
