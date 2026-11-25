@@ -148,3 +148,32 @@ export function FadeIn({
     </M>
   );
 }
+
+/** Slides a block up into place. Transform only, for the same Safari reason. */
+export function SlideIn({
+  children,
+  className,
+  delay = 0,
+  y = 34,
+  as = "div",
+}: {
+  children: ReactNode;
+  className?: string;
+  delay?: number;
+  y?: number;
+  as?: "div" | "li" | "p" | "span";
+}) {
+  const reduce = useReducedMotion();
+  const M = motion[as];
+  return (
+    <M
+      className={className}
+      initial={{ y: reduce ? 0 : y }}
+      whileInView={{ y: 0 }}
+      viewport={{ once: true, margin: "0px 0px -4% 0px" }}
+      transition={{ duration: 1, ease: EASE, delay }}
+    >
+      {children}
+    </M>
+  );
+}
