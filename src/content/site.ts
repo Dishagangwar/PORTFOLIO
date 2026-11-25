@@ -27,6 +27,11 @@ export const site = {
    * Set to "" as well to show the original abstract 3D object.
    */
   heroPortrait: "/hero/portrait.webp",
+  /** Words that flip in the hero line "I build mobile apps with ___" */
+  flipWords: ["Flutter", "Kotlin", "clean architecture", "on-device AI"],
+  /** Photo and title on the banner over the highway. Set portrait to "" to remove the banner. */
+  portrait: "/hero/hero-portrait.webp",
+  bannerTitle: "Mobile Developer",
   /** Put your resume at /public/resume.pdf (or change this path). */
   resumeUrl: "/resume.pdf",
   socials: {
