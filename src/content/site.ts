@@ -22,8 +22,8 @@ export const site = {
   /** Photo and title on the banner over the highway. Set portrait to "" to remove the banner. */
   portrait: "/hero/hero-portrait.webp",
   bannerTitle: "Mobile Developer",
-  /** Put your resume at /public/resume.pdf (or change this path). */
-  resumeUrl: "/resume.pdf",
+  /** Resume PDF in /public. Replace the file or change this path. */
+  resumeUrl: "/Disha-Gangwar-Resume.pdf",
   socials: {
     github: "https://github.com/Dishagangwar",
     linkedin: "https://www.linkedin.com/in/disha-gangwar-526806280",

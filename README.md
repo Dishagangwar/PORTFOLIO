@@ -33,7 +33,7 @@ Requires Node 20.9 or newer. The project was built and tested on Node 24.
 
 Other things to update:
 
-- **Resume:** put your PDF at `public/resume.pdf`. To use a different file, change `site.resumeUrl`.
+- **Resume:** replace `public/Disha-Gangwar-Resume.pdf`, or point `site.resumeUrl` at another file.
 - **Project screenshots:** each project shows device frames with a placeholder screen. Add portrait app screenshots to `public/projects/` and set `screenshots: ["/projects/medsagar-1.png", "/projects/medsagar-2.png"]` on that project (up to 3 are shown inside the frames).
 - **Project tech stacks:** only the technologies implied by each category are pre-filled (Flutter/Dart; Kotlin/XML/Android SDK). Replace the `[Add tech]` entry with what each app actually uses. Set `demo: ""` to hide the Live Demo button for apps without one.
 - **Project links:** while a GitHub or demo URL is still a placeholder, its button shows as a dashed "[add link]" chip and isn't clickable. It becomes a real link once you enter the URL.
