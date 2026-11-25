@@ -136,6 +136,36 @@ html.has-cursor * {
   color: var(--color-muted);
 }
 
+/* Dark glass window floating over the 3D road */
+@utility window {
+  background: linear-gradient(160deg, rgb(16 16 30 / 0.86), rgb(7 7 16 / 0.82));
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.09),
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    0 40px 90px -30px rgb(0 0 0 / 0.9);
+  @media (min-width: 64rem) {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    background: linear-gradient(160deg, rgb(16 16 30 / 0.78), rgb(7 7 16 / 0.72));
+  }
+}
+
+/* The contact form is the drive-in screen, so it needs no shadow of its own */
+#contact-screen > .window {
+  border-radius: 6px;
+}
+
+/* Inline project previews step aside once the roadside phones are live */
+@media (min-width: 64rem) {
+  html[data-drive="on"] .drive-fallback {
+    display: none;
+  }
+}
+/* The speedometer only makes sense while something is driving */
+html:not([data-drive="on"]) .drive-hud {
+  visibility: hidden;
+}
+
 /* Film grain overlay */
 .grain {
   pointer-events: none;
